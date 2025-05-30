@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,19 +15,18 @@ datasource db {
 }
 
 model Contact {
-  id                Int            @id @default(autoincrement())
-  phoneNumber       String?
-  email             String?
-  linkedId          Int?
-  linkPrecedence    LinkPrecedence @default(PRIMARY)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  deletedAt         DateTime?
-  primaryContact    Contact?       @relation("LinkedContacts", fields: [linkedId], references: [id])
-  secondaryContacts Contact[]      @relation("LinkedContacts")
-}
+  id             Int       @id @default(autoincrement())
+  phoneNumber    String?   @db.VarChar(255)
+  email          String?   @db.VarChar(255)
+  linkedId       Int?
+  linkPrecedence String    @default("primary")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
 
-enum LinkPrecedence {
-  PRIMARY
-  SECONDARY
+  primaryContact    Contact?  @relation("PrimaryContact", fields: [linkedId], references: [id])
+  secondaryContacts Contact[] @relation("PrimaryContact")
+
+  @@index([email])
+  @@index([phoneNumber])
 }
